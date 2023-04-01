@@ -1,18 +1,35 @@
-# buster
+# Buster
 
-## dagger workflows for Go CI/CD
+**Buster** is a Go CI/CD package for Go packages:
 
-[dagger](https://github.com/dagger/dagger) is a new-ish framework for developing CI/CD workflows in Go, Python, or whatever else they support.
+* **Portable:** CI/CD pipelines you can develop and deploy everywhere, on every platform.
 
-Long story short. I don't like Yaml and I want to be able to define my most common CI/CD processes as a Go package and import them to be run somewhere else. Ultimately most CI/CD platforms will require some YAML but the goal is to cut down on it as much as possible to make CI/CD workflows easy to develop, maintain, and ship.
+* **Maintainable:** Written and tested in Go. No yaml, no spaghetti, all thanks to [Dagger IO](https://github.com/dagger/dagger).
 
-Here's what I'm thinking
+* **Ambitious:** Test, lint, fix, report, and deploy the Go library of your dreams with ease.
 
-Simple:
+## Install
 
-1. Run tests for various OSs
-2. Report test coverage in PR thread. Push to coverage badge like current workflow.
-3. Auto-lint and make changes to be autosubmitted PR to current PR branch
-4. New goreleaser like workflow?
-5. Using new github blocks show test coverage in PR overview.
-6. Unneccesary conversion check
+``go get github.com/TimothyStiles/buster@latest``
+
+
+## Docs
+
+* **[Package](github.com/TimothyStiles/buster)**
+* **[Roadmap](https://github.com/users/TimothyStiles/projects/6/)**
+
+## Contributing
+
+* **[Code of conduct](CODE_OF_CONDUCT.md):** Please read the full text so you can understand what we're all about and remember to be excellent to each other!
+
+* **[Contributor's guide](CONTRIBUTING.md):** Please read through it before you start hacking away and pushing contributions to this fine codebase.
+
+## Sponsor
+
+* **[Sponsor](https://github.com/sponsors/TimothyStiles):** 🤘 Thanks for your support 🤘
+
+## License
+
+* [MIT](LICENSE)
+
+* Copyright (c) 2023 Timothy Stiles
