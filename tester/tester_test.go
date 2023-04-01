@@ -7,11 +7,11 @@ import (
 	"github.com/TimothyStiles/buster/tester"
 )
 
-func TestRunTestContainer(t *testing.T) {
+func TestRunTests(t *testing.T) {
 	cfg := config.NewConfig()
 	cfg.RootPath = "../"
 
-	_, err := tester.RunTestContainer(cfg, "./tester/mock")
+	_, err := tester.RunTests(cfg, "./tester/mock")
 	if err != nil {
 		t.Errorf("Expected no errors, got %s", err)
 	}

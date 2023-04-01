@@ -5,10 +5,13 @@ import (
 	"github.com/TimothyStiles/buster/runner"
 )
 
-// RunTestContainer runs a test container with the given config and path to tests.
-func RunTestContainer(cfg *config.Config, path string) (string, error) {
+// RunTests runs a test container with the given config and path to tests.
+func RunTests(cfg *config.Config, path string) (string, error) {
 
-	cfg, client, ctx := runner.DefaultSetup(cfg)
+	cfg, client, ctx, err := runner.DefaultSetup(cfg)
+	if err != nil {
+		return "", err
+	}
 
 	// get reference to the local project
 	src := client.Host().Directory(cfg.RootPath)

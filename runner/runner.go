@@ -10,7 +10,7 @@ import (
 )
 
 // DefaultSetup is a constructor for a new Runner with default values.
-func DefaultSetup(cfg *config.Config) (*config.Config, *dagger.Client, *context.Context) {
+func DefaultSetup(cfg *config.Config) (*config.Config, *dagger.Client, *context.Context, error) {
 
 	ctx := context.Background()
 
@@ -28,11 +28,14 @@ func DefaultSetup(cfg *config.Config) (*config.Config, *dagger.Client, *context.
 
 	// get absolute path to the project root
 	absPath, err := filepath.Abs(cfg.RootPath)
+	if err != nil {
+		return nil, nil, nil, err
+	}
 	cfg.RootPath = absPath
 
 	if cfg.ContainerImage == "" {
 		cfg.ContainerImage = defaultConfigTemplate.ContainerImage
 	}
 
-	return cfg, client, &ctx
+	return cfg, client, &ctx, err
 }
