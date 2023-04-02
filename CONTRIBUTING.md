@@ -105,10 +105,6 @@ For non-security bug reports please [submit it using this template!](https://git
 
 If you want to suggest a feature it's as easy as filling out this [issue template](https://github.com/TimothyStiles/Buster/issues/new?assignees=&labels=&template=feature_request.md&title=), but before you do please [check to see if it's already been suggested!](https://github.com/TimothyStiles/Buster/labels/enhancement)
 
-# How add a recommended VSCode Plugin
-
-Buster comes with a set of recommended plugins for VSCode. If you have suggestions that will simplify life for the Buster dev community, consider doing a pull-request after modifying `.vscode/extensions.json`. 
-
 # In closing
 
 Thanks, for reading and I'm super psyched to see what you'll do with Buster!
