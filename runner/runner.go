@@ -2,7 +2,6 @@ package runner
 
 import (
 	"context"
-	"os"
 	"path/filepath"
 
 	"dagger.io/dagger"
@@ -15,9 +14,9 @@ func DefaultSetup(cfg *config.Config) (*config.Config, *dagger.Client, *context.
 	ctx := context.Background()
 
 	// initialize Dagger client
-	client, err := dagger.Connect(ctx, dagger.WithLogOutput(os.Stdout))
+	client, err := dagger.Connect(ctx, dagger.WithLogOutput(cfg.LogOutput))
 	if err != nil {
-		panic(err)
+		return nil, nil, nil, err
 	}
 
 	defaultConfigTemplate := config.DefaultConfig()
