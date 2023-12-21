@@ -8,7 +8,7 @@ on:
 
 jobs:
   dagger-status-check:
-    name: Check to see if dagger runtime works
+    name: Dagger runtime status check
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
