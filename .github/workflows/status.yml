@@ -1,0 +1,25 @@
+name: status check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  dagger-status-check:
+    name: Dagger runtime status check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.21
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get Dagger
+        run: go get dagger.io/dagger@latest
+      - name: Install Dagger
+        run: cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sh; cd -; }
+      - name: Run Dagger workflow
+        run: dagger run go run status/cmd/main.go
