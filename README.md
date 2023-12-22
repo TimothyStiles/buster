@@ -4,7 +4,7 @@
 
 * **Portable:** CI/CD pipelines you can develop and deploy everywhere, on every platform.
 
-* **Maintainable:** Written and tested in Go. No yaml, no spaghetti, all thanks to [Dagger IO](https://github.com/dagger/dagger).
+* **Maintainable:** Written and tested in Go. No yaml, no spaghetti.
 
 * **Ambitious:** Test, lint, fix, report, and deploy the Go library of your dreams with ease.
 
