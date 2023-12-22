@@ -23,5 +23,5 @@ jobs:
         run: cd /usr/local && { curl -L https://dl.dagger.io/dagger/install.sh | sh; cd -; }
       - name: PWD
         run: pwd && ls -la
-      - name: Run Dagger workflow
-        run: dagger run go run ./test/cmd/main.go -v ./...
+      - name: Run tests
+        run: go run ./test/cmd/main.go -v ./...
