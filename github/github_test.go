@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/google/go-github/v57/github"
 )
 
 func TestCreateGist(t *testing.T) {
@@ -13,14 +15,31 @@ func TestCreateGist(t *testing.T) {
 	}))
 	defer server.Close()
 
-	// Call CreateGist with the mock server's URL
-	resp, err := CreateGist(server.URL, "dummy-token")
-	if err != nil {
-		t.Fatalf("CreateGist returned error: %v", err)
+	// Create a new GitHubService using the mock server URL
+	service := GitHubService{
+		URL:   server.URL,
+		Token: "dummy-token",
 	}
 
-	// Check that CreateGist made a successful request
-	if resp.StatusCode != http.StatusCreated {
-		t.Errorf("CreateGist returned status %d, want %d", resp.StatusCode, http.StatusCreated)
+	// Create a new gist
+	gist := &github.Gist{
+		Description: github.String("dummy description"),
+		Public:      github.Bool(false),
+		Files: map[github.GistFilename]github.GistFile{
+			"dummy.txt": {
+				Content: github.String("dummy content"),
+			},
+		}}
+
+	// Call the CreateGist function with the mock server URL
+	createdGist, err := service.CreateGist(gist)
+	if err != nil {
+		t.Errorf("CreateGist() = %v, want nil", err)
 	}
+
+	// Check if the created gist is not nil
+	if createdGist == nil {
+		t.Errorf("CreateGist() = nil, want gist")
+	}
+
 }

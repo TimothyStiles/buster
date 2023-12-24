@@ -2,19 +2,30 @@ package github
 
 import (
 	"bytes"
+	"encoding/json"
 	"net/http"
+
+	"github.com/google/go-github/v57/github"
 )
 
-func CreateGist(url, token string) (*http.Response, error) {
-	data := []byte(`{"description":"Example of a gist","public":false,"files":{"README.md":{"content":"Hello World"}}}`)
+type GitHubService struct {
+	URL   string
+	Token string
+}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
+func (s *GitHubService) CreateGist(gist *github.Gist) (*github.Gist, error) {
+	data, err := json.Marshal(gist)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", s.URL, bytes.NewBuffer(data))
 	if err != nil {
 		return nil, err
 	}
 
 	req.Header.Set("Accept", "application/vnd.github+json")
-	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Authorization", "Bearer "+s.Token)
 	req.Header.Set("X-GitHub-Api-Version", "2022-11-28")
 
 	client := &http.Client{}
@@ -22,6 +33,12 @@ func CreateGist(url, token string) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
-	return resp, nil
+	var createdGist github.Gist
+	if err := json.NewDecoder(resp.Body).Decode(&createdGist); err != nil {
+		return nil, err
+	}
+
+	return &createdGist, nil
 }
