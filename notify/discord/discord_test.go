@@ -35,9 +35,6 @@ func TestNotify(t *testing.T) {
 		t.Errorf("Notify() = %v, want nil", error)
 	}
 
-	// Add assertions for the expected behavior
-	// ...
-	// handle response
 	// handle response
 	if resp.StatusCode == http.StatusOK {
 		// Successful response
