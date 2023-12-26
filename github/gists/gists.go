@@ -10,6 +10,7 @@ import (
 type GistsServiceInterface interface {
 	Create(ctx context.Context, gist *github.Gist) (*github.Gist, *github.Response, error)
 	ListAll(ctx context.Context, opts *github.GistListOptions) ([]*github.Gist, *github.Response, error)
+	Edit(ctx context.Context, gistID string, gist *github.Gist) (*github.Gist, *github.Response, error)
 }
 
 // CreateGist creates a new gist with the given filename and content to the service token's user's account
@@ -50,4 +51,39 @@ func CheckGistExists(service GistsServiceInterface, gistName string) (bool, erro
 	}
 
 	return false, nil
+}
+
+// GetGistID gets the ID of the gist with the given name under the token's user's account if it exists if not it returns an empty string
+func GetGistID(service GistsServiceInterface, gistName string) (string, error) {
+	// List all gists
+	gists, _, err := service.ListAll(context.Background(), nil)
+	if err != nil {
+		return "", err
+	}
+
+	// Check if a gist with the given name already exists
+	for _, gist := range gists {
+		if *gist.Description == gistName {
+			return *gist.ID, nil
+		}
+	}
+
+	return "", nil
+}
+
+// EditGist updates the gist with the given name with the given content if it exists under the token's user's account
+func EditGist(service GistsServiceInterface, filename, content, gistID string) (*github.Gist, error) {
+	// Get the gist by ID
+	gist, _, err := service.Edit(context.Background(), gistID, &github.Gist{
+		Files: map[github.GistFilename]github.GistFile{
+			github.GistFilename("filename"): {
+				Content: &content,
+			},
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return gist, nil
 }

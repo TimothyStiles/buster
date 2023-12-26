@@ -27,6 +27,12 @@ func (m *MockGistsService) ListAll(ctx context.Context, opts *github.GistListOpt
 	return args.Get(0).([]*github.Gist), args.Get(1).(*github.Response), args.Error(2)
 }
 
+// Implement the Edit method
+func (m *MockGistsService) Edit(ctx context.Context, gistID string, gist *github.Gist) (*github.Gist, *github.Response, error) {
+	args := m.Called(ctx, gistID, gist)
+	return args.Get(0).(*github.Gist), args.Get(1).(*github.Response), args.Error(2)
+}
+
 func TestCreateGist(t *testing.T) {
 	// Create a mock gist
 	filename := "test.txt"
@@ -103,4 +109,88 @@ func TestCheckGistExists(t *testing.T) {
 
 	// Assert that the mock conditions were met
 	mockGists.AssertExpectations(t)
+}
+func TestGetGistID(t *testing.T) {
+	// Create a mock GistsService
+	mockGists := new(MockGistsService)
+
+	// Create a list of mock gists
+	mockGistsList := []*github.Gist{
+		{
+			ID:          github.String("gist1"),
+			Description: github.String("gist1"),
+		},
+		{
+			ID:          github.String("gist2"),
+			Description: github.String("gist2"),
+		},
+		{
+			ID:          github.String("gist3"),
+			Description: github.String("gist3"),
+		},
+	}
+
+	// Create a mock response
+	mockResponse := &github.Response{
+		Response: &http.Response{
+			StatusCode: 200,
+		},
+	}
+
+	// Mock the ListAll method to return the mock gists list
+	mockGists.On("ListAll", mock.Anything, mock.Anything).Return(mockGistsList, mockResponse, nil)
+
+	// Test case: Gist exists
+	gistID, err := GetGistID(mockGists, "gist2")
+	assert.NoError(t, err)
+	assert.Equal(t, "gist2", gistID)
+
+	// Test case: Gist does not exist
+	gistID, err = GetGistID(mockGists, "gist4")
+	assert.NoError(t, err)
+	assert.Equal(t, "", gistID)
+
+	// Assert that the mock conditions were met
+	mockGists.AssertExpectations(t)
+}
+func TestEditGist(t *testing.T) {
+	// Create a mock GistsService
+	mockGists := new(MockGistsService)
+
+	// Define the input parameters
+	filename := "test.txt"
+	content := "Hello, World!"
+	gistID := "gist123"
+
+	// Create a mock response
+	mockResponse := &github.Response{
+		Response: &http.Response{
+			StatusCode: 200,
+		},
+	}
+
+	// Expect the Edit method to be called once with the correct arguments, and return the mock gist and mock response
+	mockGists.On("Edit", mock.Anything, gistID, mock.Anything).Return(&github.Gist{
+		Files: map[github.GistFilename]github.GistFile{
+			github.GistFilename(filename): {
+				Content: &content,
+			},
+		},
+	}, mockResponse, nil)
+
+	// Call the EditGist function with the mock service
+	editedGist, err := EditGist(mockGists, filename, content, gistID)
+
+	// Assert that the mock conditions were met
+	mockGists.AssertExpectations(t)
+
+	// Assert that the returned gist is as expected and there was no error
+	assert.NoError(t, err)
+	assert.Equal(t, &github.Gist{
+		Files: map[github.GistFilename]github.GistFile{
+			github.GistFilename(filename): {
+				Content: &content,
+			},
+		},
+	}, editedGist)
 }
