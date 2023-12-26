@@ -1,45 +1,60 @@
-package github
+package githubbuster
 
 import (
+	"context"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/google/go-github/v57/github"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
+// Create a struct that embeds testify's mock.Mock
+type MockGistsService struct {
+	mock.Mock
+}
+
+// Implement the Create method
+func (m *MockGistsService) Create(ctx context.Context, gist *github.Gist) (*github.Gist, *github.Response, error) {
+	args := m.Called(ctx, gist)
+	return args.Get(0).(*github.Gist), args.Get(1).(*github.Response), args.Error(2)
+}
+
 func TestCreateGist(t *testing.T) {
-	// Create a mock server
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusCreated)
-	}))
-	defer server.Close()
-
-	// Create a new GitHubService using the mock server URL
-	service := GitHubService{
-		URL:   server.URL,
-		Token: "dummy-token",
+	// Create a mock gist
+	filename := "test.txt"
+	content := "Hello, World!"
+	file := github.GistFile{
+		Filename: &filename,
+		Content:  &content,
 	}
-
-	// Create a new gist
-	gist := &github.Gist{
-		Description: github.String("dummy description"),
-		Public:      github.Bool(false),
+	gist := github.Gist{
 		Files: map[github.GistFilename]github.GistFile{
-			"dummy.txt": {
-				Content: github.String("dummy content"),
-			},
-		}}
-
-	// Call the CreateGist function with the mock server URL
-	createdGist, err := service.CreateGist(gist)
-	if err != nil {
-		t.Errorf("CreateGist() = %v, want nil", err)
+			github.GistFilename(filename): file,
+		},
 	}
 
-	// Check if the created gist is not nil
-	if createdGist == nil {
-		t.Errorf("CreateGist() = nil, want gist")
+	// Create a new MockGistsService
+	mockGists := new(MockGistsService)
+
+	// Create a mock response
+	mockResponse := &github.Response{
+		Response: &http.Response{
+			StatusCode: 200,
+		},
 	}
 
+	// Expect the Create method to be called once with any arguments, and return the mock gist, mock response and no error
+	mockGists.On("Create", mock.Anything, mock.Anything).Return(&gist, mockResponse, nil)
+
+	// Call the CreateGist function with the mock service
+	createdGist, err := CreateGist(mockGists, filename, content)
+
+	// Assert that the mock conditions were met
+	mockGists.AssertExpectations(t)
+
+	// Assert that the returned gist is as expected and there was no error
+	assert.NoError(t, err)
+	assert.Equal(t, &gist, createdGist)
 }

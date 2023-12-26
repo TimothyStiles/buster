@@ -1,44 +1,33 @@
-package github
+package githubbuster
 
 import (
-	"bytes"
-	"encoding/json"
-	"net/http"
+	"context"
 
 	"github.com/google/go-github/v57/github"
 )
 
-type GitHubService struct {
-	URL   string
-	Token string
+// Define an interface that includes the methods you want to mock
+type GistsServiceInterface interface {
+	Create(ctx context.Context, gist *github.Gist) (*github.Gist, *github.Response, error)
 }
 
-func (s *GitHubService) CreateGist(gist *github.Gist) (*github.Gist, error) {
-	data, err := json.Marshal(gist)
+// Modify the CreateGist function to accept a GistsServiceInterface parameter instead of a *github.Client
+func CreateGist(service GistsServiceInterface, filename, content string) (*github.Gist, error) {
+	file := github.GistFile{
+		Filename: &filename,
+		Content:  &content,
+	}
+
+	gist := github.Gist{
+		Files: map[github.GistFilename]github.GistFile{
+			github.GistFilename(filename): file,
+		},
+	}
+
+	createdGist, _, err := service.Create(context.Background(), &gist)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", s.URL, bytes.NewBuffer(data))
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("Accept", "application/vnd.github+json")
-	req.Header.Set("Authorization", "Bearer "+s.Token)
-	req.Header.Set("X-GitHub-Api-Version", "2022-11-28")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	var createdGist github.Gist
-	if err := json.NewDecoder(resp.Body).Decode(&createdGist); err != nil {
-		return nil, err
-	}
-
-	return &createdGist, nil
+	return createdGist, nil
 }
