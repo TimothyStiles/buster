@@ -4,7 +4,8 @@ import (
 	"context"
 	"os"
 
-	"github.com/google/go-github/github"
+	githubbuster "github.com/TimothyStiles/buster/github"
+	"github.com/google/go-github/v57/github"
 	"golang.org/x/oauth2"
 )
 
@@ -27,15 +28,7 @@ func main() {
 	filename := "test.txt"
 	content := "Hello, World!"
 
-	gist := github.Gist{
-		Files: map[github.GistFilename]github.GistFile{
-			github.GistFilename(filename): {
-				Filename: &filename,
-				Content:  &content,
-			},
-		}}
-
-	createdGist, _, err := client.Gists.Create(ctx, &gist)
+	createdGist, err := githubbuster.CreateGist(client.Gists, filename, content)
 	if err != nil {
 		panic(err)
 	}

@@ -22,6 +22,7 @@ func CreateGist(service GistsServiceInterface, filename, content string) (*githu
 		Files: map[github.GistFilename]github.GistFile{
 			github.GistFilename(filename): file,
 		},
+		Public: github.Bool(false),
 	}
 
 	createdGist, _, err := service.Create(context.Background(), &gist)
