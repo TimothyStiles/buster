@@ -1,4 +1,4 @@
-package githubbuster
+package gists
 
 import (
 	"context"
