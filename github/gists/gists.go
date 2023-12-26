@@ -12,7 +12,7 @@ type GistsServiceInterface interface {
 	ListAll(ctx context.Context, opts *github.GistListOptions) ([]*github.Gist, *github.Response, error)
 }
 
-// Modify the CreateGist function to accept a GistsServiceInterface parameter instead of a *github.Client
+// CreateGist creates a new gist with the given filename and content to the service token's user's account
 func CreateGist(service GistsServiceInterface, filename, content string) (*github.Gist, error) {
 	file := github.GistFile{
 		Filename: &filename,
@@ -34,7 +34,7 @@ func CreateGist(service GistsServiceInterface, filename, content string) (*githu
 	return createdGist, nil
 }
 
-// Function to get the names of all gists and check if a gist of that name already exists
+// ChecksGistsExists gets the names of all gists of the token's user and checks if a gist of that name already exists under the user's account
 func CheckGistExists(service GistsServiceInterface, gistName string) (bool, error) {
 	// List all gists
 	gists, _, err := service.ListAll(context.Background(), nil)
