@@ -153,7 +153,7 @@ func TestGetGistID(t *testing.T) {
 	// Assert that the mock conditions were met
 	mockGists.AssertExpectations(t)
 }
-func TestEditGist(t *testing.T) {
+func TestEditGistFile(t *testing.T) {
 	// Create a mock GistsService
 	mockGists := new(MockGistsService)
 
@@ -179,7 +179,7 @@ func TestEditGist(t *testing.T) {
 	}, mockResponse, nil)
 
 	// Call the EditGist function with the mock service
-	editedGist, err := EditGist(mockGists, filename, content, gistID)
+	editedGist, err := EditGistFile(mockGists, filename, content, gistID)
 
 	// Assert that the mock conditions were met
 	mockGists.AssertExpectations(t)
