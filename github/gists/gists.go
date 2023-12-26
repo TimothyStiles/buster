@@ -71,7 +71,7 @@ func GetGistID(service GistsServiceInterface, gistName string) (string, error) {
 	return "", nil
 }
 
-// EditGist updates the gist with the given name with the given content if it exists under the token's user's account
+// EditGistfile edits a file of a gist if it exists under the token's user's account
 func EditGistFile(service GistsServiceInterface, filename, content, gistID string) (*github.Gist, error) {
 	// Get the gist by ID
 	gist, _, err := service.Edit(context.Background(), gistID, &github.Gist{
