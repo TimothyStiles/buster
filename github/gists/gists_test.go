@@ -21,6 +21,12 @@ func (m *MockGistsService) Create(ctx context.Context, gist *github.Gist) (*gith
 	return args.Get(0).(*github.Gist), args.Get(1).(*github.Response), args.Error(2)
 }
 
+// Implement the ListAll method
+func (m *MockGistsService) ListAll(ctx context.Context, opts *github.GistListOptions) ([]*github.Gist, *github.Response, error) {
+	args := m.Called(ctx, opts)
+	return args.Get(0).([]*github.Gist), args.Get(1).(*github.Response), args.Error(2)
+}
+
 func TestCreateGist(t *testing.T) {
 	// Create a mock gist
 	filename := "test.txt"
@@ -57,4 +63,44 @@ func TestCreateGist(t *testing.T) {
 	// Assert that the returned gist is as expected and there was no error
 	assert.NoError(t, err)
 	assert.Equal(t, &gist, createdGist)
+}
+func TestCheckGistExists(t *testing.T) {
+	// Create a mock GistsService
+	mockGists := new(MockGistsService)
+
+	// Create a list of mock gists
+	mockGistsList := []*github.Gist{
+		{
+			Description: github.String("gist1"),
+		},
+		{
+			Description: github.String("gist2"),
+		},
+		{
+			Description: github.String("gist3"),
+		},
+	}
+
+	// Create a mock response
+	mockResponse := &github.Response{
+		Response: &http.Response{
+			StatusCode: 200,
+		},
+	}
+
+	// Mock the ListAll method to return the mock gists list
+	mockGists.On("ListAll", mock.Anything, mock.Anything).Return(mockGistsList, mockResponse, nil)
+
+	// Test case: Gist exists
+	exists, err := CheckGistExists(mockGists, "gist2")
+	assert.NoError(t, err)
+	assert.True(t, exists)
+
+	// Test case: Gist does not exist
+	exists, err = CheckGistExists(mockGists, "gist4")
+	assert.NoError(t, err)
+	assert.False(t, exists)
+
+	// Assert that the mock conditions were met
+	mockGists.AssertExpectations(t)
 }
