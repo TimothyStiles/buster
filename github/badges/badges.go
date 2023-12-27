@@ -37,6 +37,10 @@ func (badge *Badge) BuildURL(gist *github.Gist) error {
 	}
 
 	filename := badge.Filename
+	if filename == "" {
+		return errors.New("gist filename not found")
+	}
+
 	raw := "raw"
 	result, err := url.JoinPath(owner, id, raw, filename)
 	if err != nil {
