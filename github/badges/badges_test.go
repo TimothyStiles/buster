@@ -51,8 +51,38 @@ func TestUpsert(t *testing.T) {
 	mockGists.On("Edit", mock.Anything, mock.Anything, mock.Anything).Return(&mockGist, mockResponse, nil)
 	mockGists.On("Create", mock.Anything, mock.Anything).Return(&mockGist, mockResponse, nil)
 
-	_, err := Upsert(mockGists, testBadge)
+	err := testBadge.Upsert(mockGists)
 	if err != nil {
 		t.Errorf("Upsert returned an error: %v", err)
 	}
+}
+func TestBuildURL(t *testing.T) {
+	// Create a mock gist
+	filename := "coverage.json"
+	content := "Hello, World!"
+	file := github.GistFile{
+		Filename: &filename,
+		Content:  &content,
+	}
+	mockGist := github.Gist{
+		Files: map[github.GistFilename]github.GistFile{
+			github.GistFilename(filename): file,
+		},
+		Description: github.String("coverage.json"),
+		ID:          github.String("e58f265655ac0acacdd1a38376ccd32a"),
+		Owner: &github.User{
+			Login: github.String("TimothyStiles"),
+		},
+	}
+
+	badge := Badge{
+		Filename: "coverage.json",
+	}
+
+	err := badge.BuildURL(&mockGist)
+	if err != nil {
+		t.Errorf("BuildURL returned an error: %v", err)
+	}
+
+	// Add your assertions here
 }

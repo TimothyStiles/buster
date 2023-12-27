@@ -2,6 +2,7 @@ package badges
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 
@@ -17,18 +18,40 @@ type Shield struct {
 }
 
 type Badge struct {
-	URL      url.URL
+	URL      string
 	Filename string
 	Shield   Shield
 	Gist     *github.Gist
 }
 
-func Upsert(service gists.GistsServiceInterface, badge Badge) (*github.Gist, error) {
+func (badge *Badge) BuildURL(gist *github.Gist) error {
+	urlBase := "https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/"
+	owner := gist.Owner.GetLogin()
+	if owner == "" {
+		return errors.New("gist owner not found")
+	}
 
+	id := gist.GetID()
+	if id == "" {
+		return errors.New("gist id not found")
+	}
+
+	filename := badge.Filename
+	raw := "raw"
+	result, err := url.JoinPath(owner, id, raw, filename)
+	if err != nil {
+		return err
+	}
+	badge.URL = urlBase + result
+
+	return nil
+}
+
+func (badge *Badge) Upsert(service gists.GistsServiceInterface) error {
 	// Marshal the shield into JSON
 	shieldJSON, err := json.Marshal(badge.Shield)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	shieldString := string(shieldJSON)
 	fmt.Println(shieldString)
@@ -38,7 +61,7 @@ func Upsert(service gists.GistsServiceInterface, badge Badge) (*github.Gist, err
 	fmt.Println(gistID)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	var gistExists bool
@@ -52,5 +75,8 @@ func Upsert(service gists.GistsServiceInterface, badge Badge) (*github.Gist, err
 	} else {
 		gist, err = gists.CreateGist(service, badge.Filename, shieldString)
 	}
-	return gist, err
+
+	err = badge.BuildURL(gist)
+
+	return err
 }
