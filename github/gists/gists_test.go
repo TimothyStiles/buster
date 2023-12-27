@@ -1,7 +1,6 @@
 package gists
 
 import (
-	"context"
 	"net/http"
 	"testing"
 
@@ -11,27 +10,6 @@ import (
 )
 
 // Create a struct that embeds testify's mock.Mock
-type MockGistsService struct {
-	mock.Mock
-}
-
-// Implement the Create method
-func (m *MockGistsService) Create(ctx context.Context, gist *github.Gist) (*github.Gist, *github.Response, error) {
-	args := m.Called(ctx, gist)
-	return args.Get(0).(*github.Gist), args.Get(1).(*github.Response), args.Error(2)
-}
-
-// Implement the ListAll method
-func (m *MockGistsService) ListAll(ctx context.Context, opts *github.GistListOptions) ([]*github.Gist, *github.Response, error) {
-	args := m.Called(ctx, opts)
-	return args.Get(0).([]*github.Gist), args.Get(1).(*github.Response), args.Error(2)
-}
-
-// Implement the Edit method
-func (m *MockGistsService) Edit(ctx context.Context, gistID string, gist *github.Gist) (*github.Gist, *github.Response, error) {
-	args := m.Called(ctx, gistID, gist)
-	return args.Get(0).(*github.Gist), args.Get(1).(*github.Response), args.Error(2)
-}
 
 func TestCreateGist(t *testing.T) {
 	// Create a mock gist
