@@ -12,7 +12,7 @@ import (
 type Shield struct {
 	Label         string `json:"label"`
 	Message       string `json:"message"`
-	SchemaVersion int    `json:"schemaVersion"`
+	SchemaVersion string `json:"schemaVersion"`
 	Color         string `json:"color"`
 }
 
@@ -59,15 +59,21 @@ func (badge *Badge) Upsert(service gists.GistsServiceInterface) error {
 	shieldString := string(shieldJSON)
 
 	// check if gist exists
-	gistID, err := gists.GetGistID(service, badge.Filename)
-
-	if err != nil {
-		return err
-	}
 
 	var gistExists bool
-	if gistID != "" {
-		gistExists = true
+	var gistID string
+	if gistID == "" {
+		gistExists = false
+	} else {
+		gistID, err = gists.GetGistID(service, badge.Filename)
+
+		if err != nil {
+			return err
+		}
+		if gistID != "" {
+			gistExists = true
+		}
+
 	}
 
 	var gist *github.Gist

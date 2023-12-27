@@ -27,7 +27,7 @@ func TestUpsert(t *testing.T) {
 			Label:         "test",
 			Message:       "test",
 			Color:         "blue",
-			SchemaVersion: 1,
+			SchemaVersion: "1",
 		},
 	}
 
