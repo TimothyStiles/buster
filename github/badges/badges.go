@@ -3,7 +3,6 @@ package badges
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/url"
 
 	"github.com/TimothyStiles/buster/github/gists"
@@ -58,11 +57,9 @@ func (badge *Badge) Upsert(service gists.GistsServiceInterface) error {
 		return err
 	}
 	shieldString := string(shieldJSON)
-	fmt.Println(shieldString)
 
 	// check if gist exists
 	gistID, err := gists.GetGistID(service, badge.Filename)
-	fmt.Println(gistID)
 
 	if err != nil {
 		return err
