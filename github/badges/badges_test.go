@@ -55,8 +55,4 @@ func TestUpsert(t *testing.T) {
 	if err != nil {
 		t.Errorf("Upsert returned an error: %v", err)
 	}
-
-	// Add your assertions here to verify the behavior of the Upsert function
-	// For example, you can check if the mockService's Upsert method was called with the correct arguments
-	// You can also check if the returned gist matches your expectations
 }

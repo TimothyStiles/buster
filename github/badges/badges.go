@@ -52,12 +52,5 @@ func Upsert(service gists.GistsServiceInterface, badge Badge) (*github.Gist, err
 	} else {
 		gist, err = gists.CreateGist(service, badge.Filename, shieldString)
 	}
-
-	// gistID, err := gists.GetGistID(service, filename)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// Rest of the code...
 	return gist, err
 }
