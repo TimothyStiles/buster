@@ -17,16 +17,14 @@ jobs:
           go-version: 1.21
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Set up Just
-        uses: extractions/setup-just@v1
       - name: Generate coverage report
         run: go test -v -coverprofile=profile.cov ./...
       - name: Parse overall coverage
         run: coverage=$(go tool cover -func profile.cov | tail -1 | rev | cut -f 1 | rev) && echo "COVERAGE=$coverage" >> $GITHUB_ENV 
       - name: Create the Badge
-        run: go run ./test/cmd/main.go -v ./...
+        run: go run ./coverage/cmd/main.go -v ./...
         env:
-          GITHUB_GIST_TOKEN: ${{ secrets.COVERAGE_GIST}}
+          GITHUB_GIST_TOKEN: ${{ secrets.GITHUB_GIST_TOKEN }}
           GITHUB_GIST_FILENAME: buster-coverage.json
           GITHUB_GIST_LABEL: Coverage
           GITHUB_GIST_MESSAGE: ${{ env.COVERAGE }}
