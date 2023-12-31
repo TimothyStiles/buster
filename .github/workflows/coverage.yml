@@ -1,0 +1,34 @@
+name: Build Coverage Badge
+
+on:
+    push:
+      branches:
+        - main
+    pull_request:
+
+jobs:
+  coverage-badge:
+    name: Create Coverage Badge
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.21
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Just
+        uses: extractions/setup-just@v1
+      - name: Generate coverage report
+        run: go test -v -coverprofile=profile.cov ./...
+      - name: Parse overall coverage
+        run: coverage=$(go tool cover -func profile.cov | tail -1 | rev | cut -f 1 | rev) && echo "COVERAGE=$coverage" >> $GITHUB_ENV 
+      - name: Create the Badge
+        run: go run ./test/cmd/main.go -v ./...
+        env:
+          GITHUB_GIST_TOKEN: ${{ secrets.COVERAGE_GIST}}
+          GITHUB_GIST_FILENAME: buster-coverage.json
+          GITHUB_GIST_LABEL: Coverage
+          GITHUB_GIST_MESSAGE: ${{ env.COVERAGE }}
+          GITHUB_GIST_COLOR": green
+        
