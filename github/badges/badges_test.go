@@ -44,6 +44,7 @@ func TestUpsert(t *testing.T) {
 		},
 		Description: github.String("test.txt"),
 		ID:          github.String("test"),
+		Owner:       &github.User{Login: github.String("TimothyStiles")},
 	}
 
 	// Expect the ListAll method to be called once with any arguments, and return a slice containing the mock gist, the mock response and no error
