@@ -50,7 +50,7 @@ func (badge *Badge) BuildURL(gist *github.Gist) error {
 	return nil
 }
 
-func (badge *Badge) Create(client *github.Client) error {
+func (badge *Badge) create(client *github.Client) error {
 	// create gist
 	shieldJSON, err := json.Marshal(badge.Shield)
 	if err != nil {
@@ -79,7 +79,18 @@ func (badge *Badge) Create(client *github.Client) error {
 	return nil
 }
 
-func (badge *Badge) Update(client *github.Client) error {
+func (badge *Badge) delete(client *github.Client) error {
+	// delete gist
+	_, err := client.Gists.Delete(context.Background(), badge.Gist.GetID())
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (badge *Badge) update(client *github.Client) error {
 	// update gist
 	shieldJSON, err := json.Marshal(badge.Shield)
 	if err != nil {
@@ -107,7 +118,7 @@ func (badge *Badge) Update(client *github.Client) error {
 	return nil
 }
 
-func (badge *Badge) Get(client *github.Client) error {
+func (badge *Badge) get(client *github.Client) error {
 
 	var err error
 	if badge.Gist.GetID() == "" {
@@ -147,17 +158,17 @@ func (badge *Badge) getIDFromDescription(client *github.Client) error {
 
 func (badge *Badge) Upsert(client *github.Client) error {
 
-	err := badge.Get(client)
+	err := badge.get(client)
 	if err == nil {
 		// update gist
-		err = badge.Update(client)
+		err = badge.update(client)
 		if err != nil {
 			return err
 		}
 
 	} else {
 		// create gist
-		err = badge.Create(client)
+		err = badge.create(client)
 		if err != nil {
 			return err
 		}

@@ -2,6 +2,7 @@ package badges
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	"github.com/TimothyStiles/ditto"
@@ -53,9 +54,10 @@ func TestUpsert(t *testing.T) {
 		Shield:   shield,
 	}
 
-	client := github.NewClient(ditto.Client()).WithAuthToken("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")
+	token := os.Getenv("GITHUB_TOKEN")
+	client := github.NewClient(ditto.Client()).WithAuthToken(token)
 
-	err := badge.Create(client)
+	err := badge.create(client)
 	if err != nil {
 		t.Errorf("Upsert returned an error: %v", err)
 	}
@@ -90,7 +92,7 @@ func TestUpsert(t *testing.T) {
 	badge.Gist.ID = nil
 
 	// test get
-	err = badge.Get(client)
+	err = badge.get(client)
 	if err != nil {
 		t.Errorf("Get returned an error: %v", err)
 	}
@@ -105,5 +107,36 @@ func TestUpsert(t *testing.T) {
 	if err != nil {
 		t.Errorf("Upsert returned an error: %v", err)
 	}
+	// Add your assertions here
+}
+
+func TestUpdate(t *testing.T) {
+	shield := Shield{
+		Label:         "coverage",
+		Message:       "100%",
+		SchemaVersion: "1",
+		Color:         "green",
+	}
+
+	badge := Badge{
+		Filename: "buster-coverage-test-call.json",
+		Shield:   shield,
+		Gist: &github.Gist{
+			ID:          github.String("e58f265655ac0acacdd1a38376ccd32a"),
+			Description: github.String("buster-coverage-test-call.json"),
+			Owner: &github.User{
+				Login: github.String("TimothyStiles"),
+			},
+		},
+	}
+
+	token := os.Getenv("GITHUB_TOKEN")
+	client := github.NewClient(ditto.Client()).WithAuthToken(token)
+
+	err := badge.update(client)
+	if err != nil {
+		t.Errorf("Update returned an error: %v", err)
+	}
+
 	// Add your assertions here
 }
