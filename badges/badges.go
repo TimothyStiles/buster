@@ -75,6 +75,7 @@ func (badge *Badge) Create(client *github.Client) error {
 	}
 
 	badge.Gist = createdGist
+	badge.BuildURL(badge.Gist)
 	return nil
 }
 
